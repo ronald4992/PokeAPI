@@ -25,4 +25,3 @@ document.getElementById("uno").classList.add(data.types[0].type.name)
 }
 
 
-Pokemon(94)
