@@ -1,37 +1,40 @@
-var totalPersonajes = 52; // aproximado, la API tiene 52 personajes
-var personajes = [];
+let pokemones = [];
+let totalPokes = 1025;
 
-// Conexión general con la API
-async function Conexion(filtroFamilia) {
-  if (filtroFamilia == "All") {
-    const res = await fetch("https://thronesapi.com/api/v2/Characters");
+// Conexión para obtener la lista de Pokémon
+async function conexionLista(filtrotipo) {
+
+  
+  if(filtrotipo == "All"){
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${totalPokes}`);
     const data = await res.json();
-    return data;
-  } else {
-    // Filtrar por familia (simula el filtro tipo de Pokémon)
-    const res = await fetch("https://thronesapi.com/api/v2/Characters");
+    return data.results;
+  }else{
+    const res = await fetch(`https://pokeapi.co/api/v2/type/${filtrotipo}`);
     const data = await res.json();
 
-    const personajesFamilia = data.filter(
-      p => p.family && p.family.toLowerCase() === filtroFamilia.toLowerCase()
-    );
-
-    return personajesFamilia;
+    const pokemonesTipo = [];
+    for (let i = 0; i < data.pokemon.length; i++) {
+      pokemonesTipo.push(data.pokemon[i].pokemon);
+    }
+    return pokemonesTipo;
   }
+
 }
 
-// Carga inicial (solo una vez)
+// Cargar todos los Pokémon al iniciar
 async function General() {
-  if (personajes.length === 0) {
-    personajes = await Conexion("All");
+  if (pokemones.length === 0) {
+    pokemones = await conexionLista("All");
   }
-  Home(); // Mostrar la pantalla principal
+  Home();
 }
 
-// Aplicar filtro (por familia)
-async function FiltroConexion(Elfiltro) {
+General()
+
+async function FiltroConexion(Elfiltro){
   document.getElementById("la-lista").innerHTML = "";
-  personajes = await Conexion(Elfiltro);
-  const listaHTML = generarLista(personajes);
+  pokemones = await conexionLista(Elfiltro);
+  const listaHTML = generarLista(pokemones);
   document.getElementById("la-lista").innerHTML = listaHTML;
 }
